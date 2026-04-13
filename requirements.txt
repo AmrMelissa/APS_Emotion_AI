@@ -1,0 +1,30 @@
+# Deep Learning
+torch>=2.0.0
+torchaudio>=2.0.0
+transformers>=4.38.0
+datasets
+
+# Audio
+librosa
+soundfile
+pyaudio
+
+# Transcription
+openai-whisper
+
+# API & Demo
+fastapi
+uvicorn
+streamlit
+
+# Data & ML
+scikit-learn
+pandas
+numpy
+
+# Visualisation
+matplotlib
+seaborn
+
+# Kaggle
+kaggle
