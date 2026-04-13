@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 env/
+emotion_venv/
 *.egg-info/
 
 # Conda
