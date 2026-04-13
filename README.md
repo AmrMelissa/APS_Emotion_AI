@@ -17,7 +17,7 @@
 ## 🗂️ Structure du Projet
 
 ```
-emotion-detection/
+APS_emotion_AI/
 │
 ├── data/
 │   ├── raw/
