@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Conda
+.conda/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Données brutes & lourdes (ne pas versionner)
+data/raw/
+data/processed/
+data/splits/*.csv
+
+# Modèles & checkpoints (trop lourds pour Git)
+checkpoints/
+*.pt
+*.bin
+*.safetensors
+
+# Résultats intermédiaires
+results/
+
+# Variables d'environnement
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Whisper cache
+~/.cache/whisper/
