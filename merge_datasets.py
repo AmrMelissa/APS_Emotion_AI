@@ -13,8 +13,8 @@ output_audio_dir = "data/processed/audio"
 
 os.makedirs(output_audio_dir, exist_ok=True)
 
-print("RAVDESS existe ?", os.path.exists(ravdess_path))
-print("CREMA-D existe ?", os.path.exists(cremad_path))
+print("RAVDESS existe ?", os.path.exists("notebooks/data/raw/RAVDESS"))
+print("CREMA-D existe ?", os.path.exists("notebooks/data/raw/CREMA-D"))
 data = []
 counter = 0
 
