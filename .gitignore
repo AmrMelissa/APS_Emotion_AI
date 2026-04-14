@@ -48,4 +48,21 @@ Thumbs.db
 
 # Whisper cache
 ~/.cache/whisper/
+
 notebooks/data/
+
+
+
+
+# dossiers de données
+APS_Emotion_AI/audio_speech_actors_01-24/
+APS_Emotion_AI/AudioWAV/
+
+# fichiers lourds
+*.wav
+*.mp4
+*.pt
+
+# python
+__pycache__/
+
