@@ -1,14 +1,20 @@
 import os
 import shutil
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 # =========================
-# 📁 CONFIG
+# 📁 PATHS
 # =========================
-output_audio_dir = "data/audio"
+ravdess_path = "notebooks/data/raw/RAVDESS"
+cremad_path = "notebooks/data/raw/CREMA-D"
+output_audio_dir = "data/processed/audio"
+
+
+
 os.makedirs(output_audio_dir, exist_ok=True)
 
+print("RAVDESS existe ?", os.path.exists("notebooks/data/raw/RAVDESS"))
+print("CREMA-D existe ?", os.path.exists("notebooks/data/raw/CREMA-D"))
 data = []
 counter = 0
 
@@ -36,20 +42,19 @@ def get_ravdess_emotion(filename):
 
 print("🔍 RAVDESS...")
 
-for root, _, files in os.walk("audio_speech_actors_01-24"):
+for root, _, files in os.walk(ravdess_path):
     for file in files:
         if file.endswith(".wav"):
             emotion = get_ravdess_emotion(file)
 
             if emotion:
-                src_path = os.path.join(root, file)
-
+                src = os.path.join(root, file)
                 new_name = f"sample_{counter}.wav"
-                dst_path = os.path.join(output_audio_dir, new_name)
+                dst = os.path.join(output_audio_dir, new_name)
 
-                shutil.copy(src_path, dst_path)
+                shutil.copy(src, dst)
 
-                data.append([dst_path, emotion])
+                data.append([dst, emotion])
                 counter += 1
 
 print("✅ RAVDESS terminé")
@@ -77,73 +82,38 @@ def get_cremad_emotion(filename):
 
 print("🔍 CREMA-D...")
 
-for root, _, files in os.walk("AudioWAV"):
+for root, _, files in os.walk(cremad_path):
     for file in files:
         if file.endswith(".wav"):
             emotion = get_cremad_emotion(file)
 
             if emotion:
-                src_path = os.path.join(root, file)
-
+                src = os.path.join(root, file)
                 new_name = f"sample_{counter}.wav"
-                dst_path = os.path.join(output_audio_dir, new_name)
+                dst = os.path.join(output_audio_dir, new_name)
 
-                shutil.copy(src_path, dst_path)
+                shutil.copy(src, dst)
 
-                data.append([dst_path, emotion])
+                data.append([dst, emotion])
                 counter += 1
 
 print("✅ CREMA-D terminé")
 
 
 # =========================
-# 📊 DATAFRAME
+# 📊 DATAFRAME FINAL
 # =========================
 df = pd.DataFrame(data, columns=["path", "emotion"])
 
-print("\n📊 Distribution globale :")
+print("\n📊 Distribution :")
 print(df["emotion"].value_counts())
 
 
 # =========================
-# 💾 SAVE FULL DATASET
+# 💾 SAVE CSV
 # =========================
-full_path = "data/full_dataset.csv"
-df.to_csv(full_path, index=False)
-print(f"\n📁 Dataset complet sauvegardé : {full_path}")
+output_csv = "notebooks/data/processed/full_dataset.csv"
+df.to_csv(output_csv, index=False)
 
-
-# =========================
-# 🔀 SPLITS
-# =========================
-print("\n🔀 Création des splits...")
-
-train_df, temp_df = train_test_split(df, test_size=0.2, stratify=df["emotion"], random_state=42)
-val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df["emotion"], random_state=42)
-
-os.makedirs("data/splits", exist_ok=True)
-
-train_df.to_csv("data/splits/train.csv", index=False)
-val_df.to_csv("data/splits/val.csv", index=False)
-test_df.to_csv("data/splits/test.csv", index=False)
-
-print("✅ Splits créés : train / val / test")
-
-
-# =========================
-# 📊 CHECK SPLITS
-# =========================
-print("\n📊 Train distribution :")
-print(train_df["emotion"].value_counts())
-
-print("\n📊 Val distribution :")
-print(val_df["emotion"].value_counts())
-
-print("\n📊 Test distribution :")
-print(test_df["emotion"].value_counts())
-
-
-print("\n🎉 TOUT EST PRÊT 🔥")
-print("➡️ Audio :", output_audio_dir)
-print("➡️ CSV :", full_path)
-print("➡️ Splits : data/splits/")
+print(f"\n🎉 Dataset sauvegardé : {output_csv}")
+print("Total samples :", len(df))
