@@ -5,16 +5,16 @@ import pandas as pd
 # =========================
 # 📁 PATHS
 # =========================
-ravdess_path = "notebooks/data/raw/RAVDESS"
-cremad_path = "notebooks/data/raw/CREMA-D"
+ravdess_path = "data/raw/RAVDESS"
+cremad_path = "data/raw/CREMA-D"
 output_audio_dir = "data/processed/audio"
 
 
 
 os.makedirs(output_audio_dir, exist_ok=True)
 
-print("RAVDESS existe ?", os.path.exists("notebooks/data/raw/RAVDESS"))
-print("CREMA-D existe ?", os.path.exists("notebooks/data/raw/CREMA-D"))
+print("RAVDESS existe ?", os.path.exists("data/raw/RAVDESS"))
+print("CREMA-D existe ?", os.path.exists("data/raw/CREMA-D"))
 data = []
 counter = 0
 
@@ -112,7 +112,7 @@ print(df["emotion"].value_counts())
 # =========================
 # 💾 SAVE CSV
 # =========================
-output_csv = "notebooks/data/processed/full_dataset.csv"
+output_csv = "data/processed/full_dataset.csv"
 df.to_csv(output_csv, index=False)
 
 print(f"\n🎉 Dataset sauvegardé : {output_csv}")
