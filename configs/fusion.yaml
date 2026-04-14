@@ -1,0 +1,96 @@
+# Fusion Module Configuration
+# ============================
+
+# Fusion Strategy
+fusion:
+  strategy: "attention"  # "late" ou "attention"
+  
+  # Late Fusion: combine logits/probabilities with weights
+  late_fusion:
+    audio_weight: 0.5    # Poids pour les prédictions audio
+    text_weight: 0.5     # Poids pour les prédictions texte
+    method: "weighted_average"  # "weighted_average", "max", "product"
+  
+  # Attention-based Fusion: learned weights
+  attention:
+    hidden_dim: 256
+    num_heads: 4
+    dropout: 0.1
+    num_layers: 2
+    activation: "relu"
+
+# Model Inputs
+models:
+  audio:
+    checkpoint: "checkpoints/audio_model/best_model.pt"
+    num_classes: 8
+    feature_dim: 768  # Output dimension du modèle audio
+    
+  text:
+    checkpoint: "checkpoints/text_model/best_model.pt"
+    num_classes: 8
+    feature_dim: 768   # Output dimension du modèle texte
+
+# Training Hyperparameters
+training:
+  num_epochs: 5
+  batch_size: 32
+  learning_rate: 5e-5
+  weight_decay: 1e-5
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  
+  # Optimizer
+  optimizer: "adamw"
+  
+  # Scheduler  
+  scheduler: "cosine"
+  
+  # Validation
+  eval_strategy: "epoch"
+  save_strategy: "best"
+  metric_for_best_model: "f1"
+  
+  # Loss
+  loss_function: "cross_entropy"
+  class_weights: null  # null = pas de pondération des classes
+
+# Data
+data:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  seed: 42
+  
+  # Modalités à utiliser
+  modalities:
+    - audio
+    - text
+
+# Paths
+paths:
+  data_dir: "data/processed"
+  checkpoint_dir: "checkpoints/fusion_model"
+  results_dir: "results/fusion"
+
+# Device
+device: "cuda"  # "cuda" ou "cpu"
+
+# Logging
+logging:
+  log_dir: "logs/fusion_model"
+  log_level: "info"
+
+# Evaluation
+evaluation:
+  metrics:
+    - "accuracy"
+    - "f1"
+    - "precision"
+    - "recall"
+  
+  # Matrice de confusion
+  confusion_matrix: true
+  
+  # Per-emotion metrics
+  per_emotion_metrics: true

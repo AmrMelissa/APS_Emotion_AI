@@ -1,0 +1,99 @@
+# Text Model Configuration
+# ========================
+
+# Model Architecture
+model:
+  pretrained_model: "bert-base-uncased"  # ou "bert-base-multilingual-uncased", "distilbert-base-uncased"
+  model_type: "bert"  # "bert", "distilbert", "roberta"
+  
+  # Classification Head
+  num_classes: 8  # Nombre d'émotions
+  hidden_dropout_prob: 0.1
+  attention_probs_dropout_prob: 0.1
+  
+  # Fine-tuning
+  freeze_backbone: false  # Laisser false pour fine-tuner le modèle complet
+  num_freeze_layers: 0  # Nombre de couches à geler (0 = aucune)
+
+# Tokenization
+tokenizer:
+  max_length: 512  # Longueur maximale des tokens
+  padding: "max_length"  # "max_length" ou "longest"
+  truncation: true
+  return_tensors: "pt"
+
+# Training Hyperparameters
+training:
+  num_epochs: 10
+  batch_size: 16
+  learning_rate: 2e-5  # Learning rate standard pour BERT fine-tuning
+  weight_decay: 0.01
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  
+  # Optimizer
+  optimizer: "adamw"
+  
+  # Scheduler
+  scheduler: "linear"  # "linear", "cosine", "step"
+  
+  # Validation
+  eval_strategy: "epoch"
+  save_strategy: "best"
+  metric_for_best_model: "f1"
+  
+  # Loss
+  loss_function: "cross_entropy"
+  class_weights: null  # null = pas de pondération des classes
+
+# Data
+data:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  seed: 42
+  
+  # Champs d'entrée/sortie
+  text_column: "transcription"  # Colonne contenant le texte transcrit
+  label_column: "emotion"  # Colonne contenant l'étiquette d'émotion
+
+# Paths
+paths:
+  data_dir: "data/processed/transcriptions"
+  checkpoint_dir: "checkpoints/text_model"
+  results_dir: "results/text"
+
+# Device
+device: "cuda"  # "cuda" ou "cpu"
+
+# Logging
+logging:
+  log_dir: "logs/text_model"
+  log_level: "info"
+
+# Preprocessing
+preprocessing:
+  lowercase: true  # Convertir en minuscules
+  remove_special_chars: false  # Garder les caractères spéciaux
+  
+  # Text augmentation (optionnel)
+  augmentation:
+    back_translation: false  # Traduction inverse
+    synonym_replacement: false
+    random_insertion: false
+    random_swap: false
+    random_deletion: false
+
+# Evaluation
+evaluation:
+  metrics:
+    - "accuracy"
+    - "f1"
+    - "precision"
+    - "recall"
+  
+  # Matrice de confusion
+  confusion_matrix: true
+  
+  # Per-emotion metrics
+  per_emotion_metrics: true
