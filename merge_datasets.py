@@ -5,9 +5,9 @@ import pandas as pd
 # =========================
 # 📁 PATHS
 # =========================
-ravdess_path = "notebooks/data/raw/RAVDESS"
-cremad_path = "notebooks/data/raw/CREMA-D"
-output_audio_dir = "data/processed/audio"
+ravdess_path = "APS_EMOTION_AI/data/raw/RAVDESS"
+cremad_path = "APS_EMOTION_AI/data/raw/CREMA-D"
+output_audio_dir = "APS_EMOTION_AI/data/processed/audio"
 
 
 
