@@ -33,6 +33,16 @@ checkpoints/
 # Résultats intermédiaires
 results/
 
+# SLURM logs (cluster)
+logs/
+
+# SLURM - fichiers personnalisés (email, config)
+train_bert.sbatch
+train_bert_slurm.py
+SETUP_BEFORE_SLURM.md
+SLURM_GUIDE.md
+train_bert.sbatch.template
+
 # Variables d'environnement
 .env
 *.env
