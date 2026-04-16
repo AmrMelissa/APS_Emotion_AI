@@ -21,7 +21,7 @@ emotion_venv/
 
 # Données brutes & lourdes (ne pas versionner)
 data/raw/
-data/processed/
+#data/processed/
 data/splits/*.csv
 
 # Modèles & checkpoints (trop lourds pour Git)
@@ -62,7 +62,7 @@ APS_Emotion_AI/AudioWAV/
 *.wav
 *.mp4
 *.pt
-*.csv
+
 
 # python
 __pycache__/
