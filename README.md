@@ -309,7 +309,7 @@ streamlit run app/streamlit_app.py
 | Configuration | WA (%) | UA (%) | F1 Macro |
 |---------------|--------|--------|----------|
 | Baseline Audio (Wav2Vec2) | — | — | — |
-| Baseline Texte (BERT) | — | — | — |
+| Baseline Texte (BERT) | 68.95% | 54.00% | 59.00% |
 | Late Fusion | — | — | — |
 | **Attention Fusion** | — | — | — |
 
