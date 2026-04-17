@@ -121,6 +121,8 @@ Signal Audio Brut
                   ▼
          Émotion Prédite 🎭
 ```
+
+```
 #nouvelle             
 🎧 Signal Audio Brut
         │
@@ -197,6 +199,7 @@ audio_vec ↔ text_vec
 
 
 
+```
 
 ---
 
