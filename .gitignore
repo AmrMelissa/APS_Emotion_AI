@@ -24,11 +24,7 @@ data/raw/
 #data/processed/
 data/splits/*.csv
 
-# Modèles & checkpoints (trop lourds pour Git)
-checkpoints/
-*.pt
-*.bin
-*.safetensors
+
 
 # Résultats intermédiaires
 results/

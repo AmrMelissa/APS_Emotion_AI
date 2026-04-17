@@ -1,0 +1,91 @@
+{
+  "model": {
+    "pretrained_model": "bert-base-uncased",
+    "model_type": "bert",
+    "num_classes": 7,
+    "hidden_dropout_prob": 0.1,
+    "attention_probs_dropout_prob": 0.1,
+    "freeze_backbone": false,
+    "num_freeze_layers": 0
+  },
+  "tokenizer": {
+    "max_length": 512,
+    "padding": "max_length",
+    "truncation": true,
+    "return_tensors": "pt"
+  },
+  "training": {
+    "num_epochs": 10,
+    "batch_size": 16,
+    "learning_rate": "2e-5",
+    "weight_decay": 0.01,
+    "warmup_steps": 500,
+    "max_grad_norm": 1.0,
+    "optimizer": "adamw",
+    "scheduler": "linear",
+    "eval_strategy": "epoch",
+    "save_strategy": "best",
+    "metric_for_best_model": "f1",
+    "loss_function": "cross_entropy",
+    "class_weights": null
+  },
+  "data": {
+    "train_split": 0.7,
+    "val_split": 0.15,
+    "test_split": 0.15,
+    "seed": 42,
+    "text_column": "transcription",
+    "label_column": "emotion"
+  },
+  "paths": {
+    "data_dir": "data/processed/transcriptions",
+    "checkpoint_dir": "checkpoints/text_model",
+    "results_dir": "results/text"
+  },
+  "device": "cuda",
+  "logging": {
+    "log_dir": "logs/text_model",
+    "log_level": "info"
+  },
+  "preprocessing": {
+    "lowercase": true,
+    "remove_special_chars": false,
+    "augmentation": {
+      "back_translation": false,
+      "synonym_replacement": false,
+      "random_insertion": false,
+      "random_swap": false,
+      "random_deletion": false
+    }
+  },
+  "evaluation": {
+    "metrics": [
+      "accuracy",
+      "f1",
+      "precision",
+      "recall"
+    ],
+    "confusion_matrix": true,
+    "per_emotion_metrics": true
+  },
+  "results": {
+    "train_loss": 0.3018980602864176,
+    "train_acc": 0.8991875,
+    "val_loss": 1.3490695123672485,
+    "val_acc": 0.659,
+    "val_f1": 0.6514068068824433,
+    "test_loss": 0.858309504032135,
+    "test_acc": 0.6895,
+    "test_f1": 0.68578354428187,
+    "best_epoch": 1,
+    "emotion_map": {
+      "neutral": 0,
+      "happy": 1,
+      "sad": 2,
+      "angry": 3,
+      "fearful": 4,
+      "disgust": 5,
+      "surprised": 6
+    }
+  }
+}
