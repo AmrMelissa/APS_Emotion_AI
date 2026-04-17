@@ -194,7 +194,7 @@ audio_vec ↔ text_vec
         ↓
    fusion_vec
         ↓
-      MLP
+       MLP
 
 
 

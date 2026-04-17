@@ -67,7 +67,6 @@ APS_Emotion_AI/AudioWAV/
 # fichiers lourds
 *.wav
 *.mp4
-*.pt
 
 
 # python
