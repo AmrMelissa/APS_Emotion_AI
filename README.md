@@ -94,6 +94,7 @@ APS_emotion_AI/
 ## 🏗️ Architecture
 
 ```
+#ancinne
 Signal Audio Brut
        │
    ┌───┴──────────────────────────────┐
@@ -120,6 +121,82 @@ Signal Audio Brut
                   ▼
          Émotion Prédite 🎭
 ```
+#nouvelle             
+🎧 Signal Audio Brut
+        │
+        ▼
+[Prétraitement Audio]
+        │
+        ▼
+        ┌───────────────────────────────┬────────────────────────────────┐
+        │                               │                                │
+        ▼                               ▼                                ▼
+🔊 BRANCHE AUDIO                 📝 TRANSCRIPTION                  📝 BRANCHE TEXTE
+(Wav2Vec2 / HuBERT)              (Whisper)                         (BERT)
+        │                               │                                │
+        ▼                               ▼                                ▼
+Représentation audio (T, d)     Texte transcrit                  Tokenisation
+        │                               │                                │
+        ▼                               │                                ▼
+⭐ Statistical Pooling                  │                    [BERT fine-tuné (GoEmotions)]
+(mean + std)                           │                                │
+        │                               │                                ▼
+        ▼                               │                    Représentation texte (T, d)
+audio_vec (2d)                         │                                │
+        │                               │                                ▼
+        │                               │                     Pooling (mean ou CLS)
+        │                               │                                │
+        ▼                               ▼                                ▼
+(OPTIONNEL) MLP_audio         Texte → BERT input               text_vec (d)
+        │                                                                │
+        ▼                                                                ▼
+logits_audio = P_a(y|x_audio)                                 (OPTIONNEL) MLP_text
+        │                                                                │
+        ▼                                                                ▼
+                                                    logits_text = P_t(y|x_text)
+        │                                                                │
+        └───────────────────────────────┬────────────────────────────────┘
+                                        ▼
+                              🔗 MODULE DE FUSION
+                                        │
+                ┌───────────────────────┴────────────────────────┐
+                ▼                                                ▼
+        🟢 Late Fusion                                    🔵 Feature Fusion
+   (fusion des probabilités)                       (fusion des représentations)
+                │                                                │
+P_final = αP_audio + (1-α)P_text              fusion_vec = concat(audio_vec, text_vec)
+                │                                                │
+                ▼                                                ▼
+        Émotion finale 🎭                          ⭐ MLP (classification finale)
+                                                          │
+                                                          ▼
+                                                   logits_final
+                                                          │
+                                                          ▼
+                                                   Émotion finale 🎭
+
+
+1 er choix:
+audio → MLP → logits_audio
+texte → MLP → logits_text
+
+→ combinaison
+
+2eme choix: Feature Fusion
+audio_vec + text_vec → concat → MLP → prédiction
+
+3eme choix: Attention Fusion
+audio_vec ↔ text_vec
+        ↓
+    attention
+        ↓
+   fusion_vec
+        ↓
+      MLP
+
+
+
+
 
 ---
 
