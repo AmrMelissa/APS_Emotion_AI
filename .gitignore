@@ -35,6 +35,7 @@ logs/
 # SLURM - fichiers personnalisés (email, config)
 train_bert.sbatch
 train_bert_slurm.py
+test_audio_model.py
 SETUP_BEFORE_SLURM.md
 SLURM_GUIDE.md
 train_bert.sbatch.template

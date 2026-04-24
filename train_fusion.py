@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import torchaudio
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModel, Wav2Vec2Model
 import os
 
 # =========================
@@ -26,7 +26,6 @@ label_map = {
     "disgust": 5,
     "surprise": 6
 }
-
 NUM_CLASSES = len(label_map)
 
 # =========================
@@ -46,39 +45,27 @@ class EmotionDataset(Dataset):
         label = label_map[row["emotion"]]
         text = row["text"]
 
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Audio not found: {path}")
-
         waveform, sr = torchaudio.load(path)
-
         return waveform, text, label
 
-
-# =========================
-# LOAD DATA
-# =========================
 dataset = EmotionDataset("data/processed/full_dataset_with_text.csv")
 loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 # =========================
-# LOAD MODELS
+# LOAD MODELS (CORRECT)
 # =========================
 print("=== Loading models ===")
 
-bert_model = torch.load(
-    "checkpoints/best_model.pt",
-    map_location=DEVICE
-)
-
-audio_model = torch.load(
-    "checkpoints/both/best_model.pt",
-    map_location=DEVICE
-)
-
+# 🔹 BERT
+bert_model = AutoModel.from_pretrained("bert-base-uncased")
+bert_model.load_state_dict(torch.load("checkpoints/best_model.pt", map_location=DEVICE))
 bert_model.to(DEVICE)
-audio_model.to(DEVICE)
-
 bert_model.eval()
+
+# 🔹 WAV2VEC2
+audio_model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base")
+audio_model.load_state_dict(torch.load("checkpoints/both/best_model.pt", map_location=DEVICE))
+audio_model.to(DEVICE)
 audio_model.eval()
 
 print("=== Models loaded ===")
@@ -92,16 +79,12 @@ def get_audio_vec(audio):
     with torch.no_grad():
         audio = audio.squeeze(1).to(DEVICE)
 
-        out = audio_model(audio)
-
-        # 🔥 compat HuggingFace
-        if hasattr(out, "last_hidden_state"):
-            out = out.last_hidden_state
+        out = audio_model(audio).last_hidden_state
 
         mean = out.mean(dim=1)
         std = out.std(dim=1)
 
-        return torch.cat([mean, std], dim=1)
+        return torch.cat([mean, std], dim=1)  # (B, 2D)
 
 
 def get_text_vec(texts):
@@ -109,43 +92,20 @@ def get_text_vec(texts):
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
     with torch.no_grad():
-        out = bert_model(**inputs)
-
-        if hasattr(out, "last_hidden_state"):
-            return out.last_hidden_state.mean(dim=1)
-        else:
-            return out
-
+        out = bert_model(**inputs).last_hidden_state
+        return out.mean(dim=1)  # (B, D)
 
 # =========================
-# MODELS
+# CONCAT FUSION MODEL
 # =========================
-class AttentionFusion(nn.Module):
+class FusionModel(nn.Module):
     def __init__(self, dim):
         super().__init__()
-        self.query = nn.Linear(dim, dim)
-        self.key = nn.Linear(dim, dim)
-        self.value = nn.Linear(dim, dim)
 
-    def forward(self, audio_vec, text_vec):
-        Q = self.query(audio_vec)
-        K = self.key(text_vec)
-        V = self.value(text_vec)
-
-        attn = torch.softmax(Q @ K.T, dim=-1)
-        return attn @ V
-
-
-class FusionModel(nn.Module):
-    def __init__(self, input_dim):
-        super().__init__()
-
-        self.proj_audio = nn.Linear(input_dim * 2, input_dim)
-
-        self.attention = AttentionFusion(input_dim)
+        self.proj_audio = nn.Linear(dim * 2, dim)
 
         self.classifier = nn.Sequential(
-            nn.Linear(input_dim, 256),
+            nn.Linear(dim * 2, 256),  # concat(audio, text)
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.Linear(256, NUM_CLASSES)
@@ -153,9 +113,8 @@ class FusionModel(nn.Module):
 
     def forward(self, audio_vec, text_vec):
         audio_vec = self.proj_audio(audio_vec)
-        fusion = self.attention(audio_vec, text_vec)
+        fusion = torch.cat([audio_vec, text_vec], dim=1)
         return self.classifier(fusion)
-
 
 # =========================
 # INIT
@@ -182,7 +141,6 @@ def train():
             text_vec = get_text_vec(text)
 
             logits = model(audio_vec, text_vec)
-
             loss = criterion(logits, label)
 
             optimizer.zero_grad()
@@ -192,7 +150,6 @@ def train():
             total_loss += loss.item()
 
         print(f"Epoch {epoch+1} | Loss: {total_loss:.4f}")
-
 
 # =========================
 # EVAL
@@ -217,7 +174,6 @@ def evaluate():
             total += label.size(0)
 
     print(f"Accuracy: {correct/total:.4f}")
-
 
 # =========================
 # RUN
