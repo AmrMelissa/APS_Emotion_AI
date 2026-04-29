@@ -101,7 +101,7 @@ print("CREMA-D termine")
 
 df = pd.DataFrame(data, columns=["path", "emotion"])
 
-print("\n📊 Distribution :")
+print("Distribution :")
 print(df["emotion"].value_counts())
 
 
