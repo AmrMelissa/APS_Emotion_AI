@@ -2,9 +2,7 @@ import os
 import shutil
 import pandas as pd
 
-# =========================
-# 📁 PATHS
-# =========================
+#chemins
 ravdess_path = "data/raw/RAVDESS"
 cremad_path = "data/raw/CREMA-D"
 output_audio_dir = "data/processed/audio"
@@ -13,14 +11,12 @@ output_audio_dir = "data/processed/audio"
 
 os.makedirs(output_audio_dir, exist_ok=True)
 
-print("RAVDESS existe ?", os.path.exists("notebooks/data/raw/RAVDESS"))
-print("CREMA-D existe ?", os.path.exists("notebooks/data/raw/CREMA-D"))
+print("RAVDESS existe", os.path.exists("notebooks/data/raw/RAVDESS"))
+print("CREMA-D existe", os.path.exists("notebooks/data/raw/CREMA-D"))
 data = []
 counter = 0
 
-# =========================
-# 🎧 RAVDESS
-# =========================
+#RAVDESS
 def get_ravdess_emotion(filename):
     try:
         code = int(filename.split("-")[2])
@@ -40,7 +36,7 @@ def get_ravdess_emotion(filename):
     return mapping.get(code)
 
 
-print("🔍 RAVDESS...")
+print("RAVDESS")
 
 for root, _, files in os.walk(ravdess_path):
     for file in files:
@@ -57,12 +53,12 @@ for root, _, files in os.walk(ravdess_path):
                 data.append([dst, emotion])
                 counter += 1
 
-print("✅ RAVDESS terminé")
+print("RAVDESS termine")
 
 
-# =========================
-# 🎤 CREMA-D
-# =========================
+
+# CREMA-D
+
 def get_cremad_emotion(filename):
     try:
         code = filename.split("_")[2]
@@ -80,7 +76,7 @@ def get_cremad_emotion(filename):
     return mapping.get(code)
 
 
-print("🔍 CREMA-D...")
+print("CREMA-D")
 
 for root, _, files in os.walk(cremad_path):
     for file in files:
@@ -97,23 +93,21 @@ for root, _, files in os.walk(cremad_path):
                 data.append([dst, emotion])
                 counter += 1
 
-print("✅ CREMA-D terminé")
+print("CREMA-D termine")
 
 
-# =========================
-# 📊 DATAFRAME FINAL
-# =========================
+
+#DATAFRAME FINAL
+
 df = pd.DataFrame(data, columns=["path", "emotion"])
 
 print("\n📊 Distribution :")
 print(df["emotion"].value_counts())
 
 
-# =========================
-# 💾 SAVE CSV
-# =========================
+# SAVE CSV
+
 output_csv = "data/processed/full_dataset.csv"
 df.to_csv(output_csv, index=False)
 
-print(f"\n🎉 Dataset sauvegardé : {output_csv}")
-print("Total samples :", len(df))
+print(f"Dataset sauvegardé : {output_csv}")
